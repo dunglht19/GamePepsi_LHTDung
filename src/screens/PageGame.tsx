@@ -1,4 +1,4 @@
-import React, { useState,useRef } from "react";
+import React, { useState, useRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -8,93 +8,115 @@ import {
   ImageBackground,
   TouchableOpacity,
   Image,
-  Animated, PanResponder,
-} from "react-native";
+  Dimensions
+} from 'react-native'
+import { PanGestureHandler } from 'react-native-gesture-handler'
 
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring
+} from 'react-native-reanimated'
 
+const windowWidth = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
+// console.log("width",windowWidth);
+// console.log("height",windowHeight);
 
+const BUTTON_HEIGHT = windowHeight * 0.4
+const BUTTON_WIDTH = windowWidth * 0.2
+const ScreenMiddle = windowWidth / 2.5
+const BUTON_PADDING = 10
+const SWIPEABLE_DIMENSON = BUTTON_WIDTH - 2 * BUTON_PADDING
+const V_SWIPE_RANGE = BUTTON_HEIGHT - 2 * BUTON_PADDING - SWIPEABLE_DIMENSON
 
-const PageGame = (props) => {
-   const { navigation } = props;
+const PageGame = props => {
+  const { navigation } = props
+
+  const onSignIn = () => {
+    navigation.navigate('PageMain')
+  }
+  const X = useSharedValue(0)
+  const animatedGestureHandler = useAnimatedGestureHandler({
+    onActive: e => {
+      X.value = e.translationX
       
+    }
+  })
 
-   const onSignIn=()=>{
-            navigation.navigate('PageMain');
-        }
+  const AnimatedStyles = {
+    buttonSwipe: useAnimatedStyle(() => {
+      return {
+        transform: [{ translateY: X.value }]
+      }
+    })
+  }
 
-    const pan = useRef(new Animated.ValueXY()).current;
-    const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event([
-      null,
-      {
-        dx: pan.x, // x,y are Animated.Value
-        dy: pan.y,
-      },
-    ]),
-    onPanResponderRelease: () => {
-      Animated.spring(
-        pan, // Auto-multiplexed
-        { toValue: { x: 0, y: 0, } } // Back to zero
-        
-      ).start();
-    },
-  });
-
-
-    return (
-      <View style={styles.container}>
-        <ImageBackground
-          source={require("../../assets/bg3.png")}
-          resizeMode="cover"
-          style={styles.image}>
-          <View style={styles.top}>
-            <Text style={styles.fontWhite2}>Vuốt lên để chơi</Text>
-            <Text style={styles.fontWhite}>Bạn còn <Text style={{ color: "yellow" }}>0</Text> lượt chơi miễn phí</Text> 
-          </View>
-          <View style={styles.bottom}>
-          <Image
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('../../assets/bg3.png')}
+        resizeMode='cover'
+        style={styles.image}
+      >
+        <View style={styles.top}>
+          <Text style={styles.fontWhite2}>Vuốt lên để chơi</Text>
+          <Text style={styles.fontWhite}>
+            Bạn còn <Text style={{ color: 'yellow' }}>0</Text> lượt chơi miễn
+            phí
+          </Text>
+        </View>
+        <View style={styles.bottom}>
+          {/* <Image
                 style={styles.img2}
                 source={require("../../assets/swiperUp.png")}
               />
-
-            <Animated.View {...panResponder.panHandlers}>
+            
+            
             <Image
                 style={styles.img}
                 source={require("../../assets/daulan.png")}
-              /> 
-            </Animated.View>
-            
+              />  */}
+
+          <View style={styles.swipeCont}>
+            <PanGestureHandler onGestureEvent={animatedGestureHandler}>
+              <Animated.View
+                style={[styles.buttonSwipe, AnimatedStyles.buttonSwipe]}
+              ></Animated.View>
+            </PanGestureHandler>
           </View>
-        </ImageBackground>
-      </View>
-    );
+        </View>
+      </ImageBackground>
+    </View>
+  )
 }
 
 export default PageGame
 
 const styles = StyleSheet.create({
-    container: {
-    flex: 1,
-    
+  container: {
+    flex: 1
   },
   image: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center'
   },
   top: {
     flex: 0.7,
-   
+
     // borderWidth: 3,
-    textAlign: "center",
-    color: "white",
-  }, 
+    textAlign: 'center',
+    color: 'white'
+  },
   bottom: {
     flex: 0.3,
-    justifyContent: "center",
-    // borderWidth: 3,
-    textAlign: "center",
+    justifyContent: 'center',
+    borderWidth: 3,
+    textAlign: 'center'
   },
 
   input: {
@@ -103,54 +125,74 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 5,
     padding: 10,
-    backgroundColor: "white",
-    
+    backgroundColor: 'white'
   },
 
-touchable: {
-    alignItems: "center",
-    justifyContent: "center",
+  touchable: {
+    alignItems: 'center',
+    justifyContent: 'center'
     // borderWidth: 5,
   },
   title: {
     fontSize: 17,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 8,
-    color: "white",
+    color: 'white'
   },
   title2: {
     fontSize: 17,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 8,
-    color: "darkblue",
+    color: 'darkblue'
   },
   imageButton: {
-    justifyContent: "center",
+    justifyContent: 'center',
     width: 230,
-    height: 50,
+    height: 50
     // borderWidth: 5,
   },
-  fontWhite:{
-    color: "white",
-    textAlign: "center",
-    fontSize:17,
+  fontWhite: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 17
   },
   fontWhite2: {
-    color: "white",
-    textAlign: "center",
-    fontSize:30,
-    fontWeight:'bold',
-    marginTop:5,
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginTop: 5
   },
   img: {
-  width: 208,
+    width: 208,
     height: 225,
-    marginLeft: 90,    
+    marginLeft: 90
   },
-   img2: {
-    
-    bottom:210,
-    left:160,
-    position:'absolute',    
+  img2: {
+    bottom: 210,
+    left: 160,
+    position: 'absolute'
   },
+
+  swipeCont: {
+    // width:BUTTON_WIDTH,
+    // height:BUTTON_HEIGHT,
+    width: BUTTON_HEIGHT,
+    height: BUTTON_WIDTH,
+
+    padding: BUTON_PADDING,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: BUTTON_HEIGHT
+    // marginHorizontal:ScreenMiddle,
+  },
+  buttonSwipe: {
+    height: SWIPEABLE_DIMENSON,
+    width: SWIPEABLE_DIMENSON,
+    borderRadius: SWIPEABLE_DIMENSON,
+    backgroundColor: 'red',
+    position: 'absolute',
+    left: 0
+  }
 })
