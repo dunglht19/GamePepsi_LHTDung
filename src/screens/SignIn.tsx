@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View,  Button,TextInput,ImageBackground,Image,TouchableOpacity} from "react-native";
 
 import Checkbox from "expo-checkbox";
-
+/////////////////////////////////////////////
 const SignIn = (props) => {
   const { navigation } = props;
   const [isChecked, setChecked] = useState(false);
